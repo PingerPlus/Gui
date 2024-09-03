@@ -19,6 +19,10 @@ public class GuiInventory {
         return new Builder();
     }
 
+    public int getRows() {
+        return this.rows;
+    }
+
     public static class Builder {
         private GuiInventory parent;
         private String title;
