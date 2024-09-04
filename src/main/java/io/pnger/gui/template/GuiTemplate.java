@@ -2,6 +2,7 @@ package io.pnger.gui.template;
 
 import com.google.common.base.Preconditions;
 import io.pnger.gui.template.button.GuiButtonTemplate;
+import io.pnger.gui.util.Iterables;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -37,14 +38,7 @@ public class GuiTemplate {
     }
 
     public <T> GuiButtonTemplate getButton(Function<GuiButtonTemplate, T> function, T param) {
-        for (final GuiButtonTemplate button : this.buttons) {
-            final T result = function.apply(button);
-            if (result.equals(param)) {
-                return button;
-            }
-        }
-
-        return null;
+        return Iterables.query(this.buttons, function, param).stream().findAny().orElse(null);
     }
 
     public String getTitle() {
@@ -80,8 +74,8 @@ public class GuiTemplate {
             return this;
         }
 
-        public Builder button(@Nonnull UnaryOperator<GuiButtonTemplate> modifier) {
-            this.buttons.add(modifier.apply(GuiButtonTemplate.create()));
+        public Builder button(@Nonnull UnaryOperator<GuiButtonTemplate.Builder> modifier) {
+            this.buttons.add(modifier.apply(GuiButtonTemplate.builder()).build());
             return this;
         }
 

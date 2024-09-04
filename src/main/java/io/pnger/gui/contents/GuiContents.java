@@ -1,11 +1,57 @@
 package io.pnger.gui.contents;
 
+import io.pnger.gui.event.ClickEvent;
 import io.pnger.gui.item.GuiItem;
+import io.pnger.gui.pagination.GuiPagination;
+import io.pnger.gui.template.GuiTemplate;
+import io.pnger.gui.template.button.GuiButtonTemplate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.bukkit.inventory.ItemStack;
 
 public interface GuiContents {
+
+    /**
+     * This method returns the {@link GuiTemplate} associated with this {@link GuiContents}.
+     * <p>
+     * The {@link GuiTemplate} contains the layout, button configuration, and general design
+     * settings for the GUI, defining how the GUI should be structured and which elements it includes.
+     *
+     * @return The {@link GuiTemplate} that defines the structure and elements of the GUI.
+     */
+    GuiTemplate getTemplate();
+
+    /**
+     * Finds and returns the {@link GuiButtonTemplate} associated with the specified symbol
+     * in the current {@link GuiTemplate}. The symbol is used to identify a specific button
+     * configuration within the template.
+     *
+     * @param symbol The character symbol representing the button to find.
+     * @return The {@link GuiButtonTemplate} associated with the specified symbol,
+     *         or {@code null} if no button template is found.
+     */
+    default GuiButtonTemplate findButtonTemplate(char symbol) {
+        return this.getTemplate().findButtonTemplate(symbol);
+    }
+
+    /**
+     * Finds and returns the {@link GuiButtonTemplate} associated with the specified identifier
+     * in the current {@link GuiTemplate}. The identifier is used to identify a specific button
+     * configuration within the template.
+     *
+     * @param identifier The string identifier representing the button to find.
+     * @return The {@link GuiButtonTemplate} associated with the specified identifier,
+     *         or {@code null} if no button template is found.
+     */
+    default GuiButtonTemplate findButtonTemplate(String identifier) {
+        return this.getTemplate().findButtonTemplate(identifier);
+    }
+
+    <T> GuiPagination<T> pagination();
+
+    <T> void createPagination(GuiPagination<T> pagination);
 
     /**
      * This method returns all items assigned to this current inventory,
@@ -31,6 +77,14 @@ public interface GuiContents {
      */
 
     void setItem(int slot, GuiItem item);
+
+    List<GuiItem> getItems(String identifier);
+
+    default List<Integer> getItemSlots(String identifier) {
+        return this.getItems(identifier).stream().map(GuiItem::slot).toList();
+    }
+
+    void handleClick(String identifier, Consumer<ClickEvent> handler);
 
     Optional<GuiItem> getItem(int slot);
 

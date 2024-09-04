@@ -1,18 +1,26 @@
 package io.pnger.gui.contents;
 
 import io.pnger.gui.GuiInventory;
+import io.pnger.gui.event.ClickEvent;
 import io.pnger.gui.item.GuiItem;
 import io.pnger.gui.item.ItemBuilder;
+import io.pnger.gui.pagination.GuiPagination;
+import io.pnger.gui.pagination.GuiPaginationImpl;
 import io.pnger.gui.template.GuiLayout;
 import io.pnger.gui.template.GuiTemplate;
+import io.pnger.gui.template.button.ButtonState;
 import io.pnger.gui.template.button.GuiButtonTemplate;
+import io.pnger.gui.util.Iterables;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -24,12 +32,15 @@ public class GuiContentsImpl implements GuiContents {
     private final GuiTemplate template;
     private final Map<String, UnaryOperator<ItemStack>> remapper;
 
+    private GuiPagination<?> pagination;
+
     public GuiContentsImpl(GuiInventory inventory, UUID uuid, GuiTemplate template) {
         this.inventory = inventory;
         this.uuid = uuid;
         this.template = template;
         this.remapper = new HashMap<>();
         this.items = new HashMap<>();
+        this.pagination = new GuiPaginationImpl<>(this);
     }
 
     public void fillInventory() {
@@ -43,30 +54,34 @@ public class GuiContentsImpl implements GuiContents {
                     continue; // It should be material air, if this happens
                 }
 
-                final ItemBuilder defaultState = button.getDefaultState();
-                if (defaultState == null) {
-                    continue;
-                }
-
-                final GuiItem item = GuiItem.of(defaultState.build());
-                contents.setItem(row, col, item);
+                final int slot = row * 9 + col;
+                final GuiItem item = this.createGuiItem(slot, button);
+                this.setItem(slot, item);
             }
         }
     }
 
-    public GuiItem createGuiItem(int slot, GuiButtonTemplate template) {
-        final ItemStack defaultState = template.getDefaultState();
+    private GuiItem createGuiItem(int slot, GuiButtonTemplate template) {
+        final ButtonState defaultState = template.getDefaultState();
         if (defaultState == null) {
-            return null;
+            return GuiItem.of(
+                new ItemStack(Material.AIR),
+                slot,
+                "default",
+                template
+            );
         }
 
-        final ItemStack copyItem = defaultState.clone();
+        final ItemStack itemStack = defaultState.getItem().clone();
         return GuiItem.of(
-            this.buildGuiItem()
-        )
+            this.buildGuiItem(template, itemStack),
+            slot,
+            "default",
+            template
+        );
     }
 
-    public ItemStack buildGuiItem(GuiButtonTemplate template, ItemStack stack) {
+    private ItemStack buildGuiItem(GuiButtonTemplate template, ItemStack stack) {
         final String identifier = template.getIdentifier();
 
         ItemStack currentStack = stack;
@@ -77,8 +92,23 @@ public class GuiContentsImpl implements GuiContents {
             }
         }
 
-        // TODO: Fix th
-        return ItemBuilder.create().build();
+        return ItemBuilder.create(currentStack).build();
+    }
+
+    @Override
+    public GuiTemplate getTemplate() {
+        return this.template;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> GuiPagination<T> pagination() {
+        return (GuiPagination<T>) this.pagination;
+    }
+
+    @Override
+    public <T> void createPagination(GuiPagination<T> pagination) {
+        this.pagination = pagination;
     }
 
     @Override
@@ -95,6 +125,16 @@ public class GuiContentsImpl implements GuiContents {
 
         this.items.put(slot, item);
         this.update(slot, item);
+    }
+
+    @Override
+    public List<GuiItem> getItems(String identifier) {
+        return Iterables.query(this.items.values(), (item) -> item.template().getIdentifier(), identifier);
+    }
+
+    @Override
+    public void handleClick(String identifier, Consumer<ClickEvent> handler) {
+        this.getItems(identifier).forEach((item) -> item.setOnClick(handler));
     }
 
     @Override

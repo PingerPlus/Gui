@@ -5,7 +5,6 @@ import io.pnger.gui.util.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import org.bukkit.Material;
@@ -35,6 +34,10 @@ public class ItemBuilder {
 
     public ItemBuilder() {
         this.item = new ItemStack(Material.AIR);
+    }
+
+    public static ItemBuilder create(ItemStack item) {
+        return new ItemBuilder(item);
     }
 
     public static ItemBuilder create() {
