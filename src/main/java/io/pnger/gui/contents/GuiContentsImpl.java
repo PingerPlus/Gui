@@ -1,6 +1,5 @@
 package io.pnger.gui.contents;
 
-import dev.oop778.shelftor.api.query.Query;
 import io.pnger.gui.GuiInventory;
 import io.pnger.gui.item.GuiItem;
 import io.pnger.gui.item.ItemBuilder;
@@ -8,7 +7,6 @@ import io.pnger.gui.template.GuiLayout;
 import io.pnger.gui.template.GuiTemplate;
 import io.pnger.gui.template.button.GuiButtonTemplate;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -79,7 +77,7 @@ public class GuiContentsImpl implements GuiContents {
             }
         }
 
-        // TODO: Fix this
+        // TODO: Fix th
         return ItemBuilder.create().build();
     }
 
