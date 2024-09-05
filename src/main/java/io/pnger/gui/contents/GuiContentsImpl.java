@@ -34,10 +34,10 @@ public class GuiContentsImpl implements GuiContents {
 
     private GuiPagination<?> pagination;
 
-    public GuiContentsImpl(GuiInventory inventory, UUID uuid, GuiTemplate template) {
+    public GuiContentsImpl(GuiInventory inventory, UUID uuid) {
         this.inventory = inventory;
         this.uuid = uuid;
-        this.template = template;
+        this.template = inventory.getTemplate();
         this.remapper = new HashMap<>();
         this.items = new HashMap<>();
         this.pagination = new GuiPaginationImpl<>(this);
@@ -157,6 +157,10 @@ public class GuiContentsImpl implements GuiContents {
     private void update(int slot, GuiItem item) {
         final Player player = Bukkit.getPlayer(this.uuid);
         if (player == null) { // Shouldn't happen but in case
+            return;
+        }
+
+        if (!this.inventory.getManager().isOpenedInventory(this.uuid, this.inventory)) {
             return;
         }
 
