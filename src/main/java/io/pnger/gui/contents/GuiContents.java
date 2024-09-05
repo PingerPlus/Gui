@@ -15,6 +15,8 @@ import org.bukkit.inventory.ItemStack;
 
 public interface GuiContents {
 
+    void fillInventory();
+
     /**
      * This method returns the {@link GuiTemplate} associated with this {@link GuiContents}.
      * <p>

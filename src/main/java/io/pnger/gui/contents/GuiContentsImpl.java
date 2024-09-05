@@ -43,6 +43,7 @@ public class GuiContentsImpl implements GuiContents {
         this.pagination = new GuiPaginationImpl<>(this);
     }
 
+    @Override
     public void fillInventory() {
         final GuiLayout layouts = this.template.getLayout();
         for (int row = 0; row < layouts.getRows(); row++) {

@@ -1,11 +1,5 @@
 package io.pnger.gui;
 
-import io.pnger.gui.contents.GuiContentsImpl;
-import io.pnger.gui.pagination.GuiPagination;
-import io.pnger.gui.pagination.GuiPaginationImpl;
-import io.pnger.gui.pagination.PageItemProvider;
-import io.pnger.gui.template.button.ButtonState;
-import io.pnger.gui.template.button.GuiButtonTemplate;
 import org.bukkit.inventory.Inventory;
 
 public class GuiInventory {
