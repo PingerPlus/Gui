@@ -2,7 +2,6 @@ package io.pnger.gui.pagination;
 
 import io.pnger.gui.contents.GuiContents;
 import io.pnger.gui.item.GuiItem;
-import io.pnger.gui.slot.GuiSlotIterator;
 import io.pnger.gui.template.button.ButtonState;
 import io.pnger.gui.template.button.GuiButtonTemplate;
 import java.util.List;
@@ -21,7 +20,7 @@ public class GuiPaginationImpl<T> implements GuiPagination<T> {
     }
 
     @Override
-    public GuiPagination<T> addToIterator(GuiSlotIterator iterator) {
+    public GuiPagination<T> addToInventory() {
         final GuiButtonTemplate template = this.contents.findButtonTemplate(this.identifier);
         if (template == null) {
             return this;

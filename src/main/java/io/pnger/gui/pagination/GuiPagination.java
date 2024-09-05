@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface GuiPagination<T> {
 
+    GuiPagination<T> addToInventory();
+
     GuiPagination<T> setItems(String identifier, List<T> items, PageItemProvider<T> provider);
 
     GuiContents getContents();
