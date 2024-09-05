@@ -1,8 +1,6 @@
 package io.pnger.gui.pagination;
 
 import io.pnger.gui.contents.GuiContents;
-import io.pnger.gui.item.GuiItem;
-import io.pnger.gui.slot.GuiSlotIterator;
 import java.util.List;
 
 /**
@@ -11,8 +9,6 @@ import java.util.List;
  */
 
 public interface GuiPagination<T> {
-
-    GuiPagination<T> addToIterator(GuiSlotIterator iterator);
 
     GuiPagination<T> setItems(String identifier, List<T> items, PageItemProvider<T> provider);
 

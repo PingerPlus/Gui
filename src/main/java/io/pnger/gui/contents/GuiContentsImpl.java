@@ -101,6 +101,12 @@ public class GuiContentsImpl implements GuiContents {
     }
 
     @Override
+    public void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier) {
+        final UnaryOperator<ItemStack> mapper = (item) -> modifier.apply(ItemBuilder.create(item)).build();
+        this.remapper.put(identifier, mapper);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> GuiPagination<T> pagination() {
         return (GuiPagination<T>) this.pagination;

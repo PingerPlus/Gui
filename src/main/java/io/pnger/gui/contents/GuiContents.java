@@ -2,6 +2,7 @@ package io.pnger.gui.contents;
 
 import io.pnger.gui.event.ClickEvent;
 import io.pnger.gui.item.GuiItem;
+import io.pnger.gui.item.ItemBuilder;
 import io.pnger.gui.pagination.GuiPagination;
 import io.pnger.gui.template.GuiTemplate;
 import io.pnger.gui.template.button.GuiButtonTemplate;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import org.bukkit.inventory.ItemStack;
 
 public interface GuiContents {
@@ -48,6 +50,8 @@ public interface GuiContents {
     default GuiButtonTemplate findButtonTemplate(String identifier) {
         return this.getTemplate().findButtonTemplate(identifier);
     }
+
+    void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier);
 
     <T> GuiPagination<T> pagination();
 
