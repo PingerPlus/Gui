@@ -1,5 +1,6 @@
 package io.pnger.gui;
 
+import io.pnger.gui.listener.GuiListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,8 @@ public class GuiManager {
                 }
             });
         }, 1L, 1L);
+
+        plugin.getServer().getPluginManager().registerEvents(new GuiListener(this), this.plugin);
     }
 
     public boolean isOpenedInventory(UUID uuid, GuiInventory inventory) {
@@ -57,5 +60,13 @@ public class GuiManager {
 
     public void unregisterInventory(UUID id) {
         this.inventories.remove(id);
+    }
+
+    public Map<UUID, GuiInventory> getInventories() {
+        return this.inventories;
+    }
+
+    public JavaPlugin getPlugin() {
+        return this.plugin;
     }
 }
