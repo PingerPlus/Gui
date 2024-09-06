@@ -5,6 +5,7 @@ import io.pnger.gui.util.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import org.bukkit.Material;
@@ -14,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemBuilder {
-    private final ItemStack item;
+    private ItemStack item;
 
     public ItemBuilder(@Nonnull ItemStack item) {
         this.item = item;
@@ -40,6 +41,14 @@ public class ItemBuilder {
         return new ItemBuilder(item);
     }
 
+    public static ItemBuilder create(XMaterial material) {
+        return new ItemBuilder(material);
+    }
+
+    public static ItemBuilder create(Material material) {
+        return new ItemBuilder(material);
+    }
+
     public static ItemBuilder create() {
         return new ItemBuilder();
     }
@@ -60,6 +69,35 @@ public class ItemBuilder {
 
     public ItemBuilder type(Material material) {
         return this.transform((item) -> item.setType(material));
+    }
+
+    public ItemBuilder type(XMaterial material) {
+        final ItemBuilder cloneBuilder = ItemBuilder.create(material);
+        final ItemMeta meta = this.item.getItemMeta();
+        if (meta == null) {
+            return cloneBuilder;
+        }
+
+        if (meta.hasDisplayName()) {
+            cloneBuilder.name(meta.getDisplayName());
+        }
+
+        if (meta.hasLore()) {
+            cloneBuilder.lore(meta.getLore());
+        }
+
+        if (meta.hasEnchants()) {
+            for (final Entry<Enchantment, Integer> enchantEntry : meta.getEnchants().entrySet()) {
+                cloneBuilder.enchant(enchantEntry.getKey(), enchantEntry.getValue());
+            }
+        }
+
+        for (final ItemFlag itemFlag : meta.getItemFlags()) {
+            cloneBuilder.flag(itemFlag);
+        }
+
+        this.item = cloneBuilder.build();
+        return this;
     }
 
     public ItemBuilder amount(int amount) {

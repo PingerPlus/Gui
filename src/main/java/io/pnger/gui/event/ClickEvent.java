@@ -1,12 +1,7 @@
 package io.pnger.gui.event;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This class is essentially a wrapper class for the {@link org.bukkit.event.inventory.InventoryClickEvent}

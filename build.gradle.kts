@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 group = "io.pnger"
@@ -11,6 +12,23 @@ repositories {
 }
 
 dependencies {
-    implementation("org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT")
-    implementation("dev.oop778.shelftor:shelftor-core:0.2")
+    compileOnly("org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT")
+    implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+    }
+
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
 }

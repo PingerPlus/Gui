@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
  * </ul>
  * Implementations of this interface should provide logic for both the static setup of the GUI (via {@code initialize})
  * and the periodic refreshing of the GUI (via {@code update}) as needed.
- * </p>
  */
 public interface GuiProvider {
 
