@@ -115,14 +115,15 @@ public class GuiListener implements Listener {
                 return;
             }
 
+            final String identifier = item.template().getIdentifier();
             final ClickEvent event = new ClickEvent(e);
             if (item.isDragging()) {
-                item.handleClick(event);
+                inv.getContents().handleClick(identifier, event);
                 return;
             }
 
             e.setCancelled(true);
-            item.handleClick(event);
+            inv.getContents().handleClick(identifier, event);
         });
     }
 }

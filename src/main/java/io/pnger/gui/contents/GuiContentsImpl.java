@@ -31,6 +31,7 @@ public class GuiContentsImpl implements GuiContents {
     private final Map<Integer, GuiItem> items;
     private final GuiTemplate template;
     private final Map<String, UnaryOperator<ItemStack>> remapper;
+    private final Map<String, Consumer<ClickEvent>> clickHandlers;
 
     private GuiPagination<?> pagination;
 
@@ -40,6 +41,7 @@ public class GuiContentsImpl implements GuiContents {
         this.template = inventory.getTemplate();
         this.remapper = new HashMap<>();
         this.items = new HashMap<>();
+        this.clickHandlers = new HashMap<>();
         this.pagination = new GuiPaginationImpl<>(this);
     }
 
@@ -140,8 +142,18 @@ public class GuiContentsImpl implements GuiContents {
     }
 
     @Override
-    public void handleClick(String identifier, Consumer<ClickEvent> handler) {
-        this.getItems(identifier).forEach((item) -> item.setOnClick(handler));
+    public void addClickHandler(String identifier, Consumer<ClickEvent> handler) {
+        this.clickHandlers.put(identifier, handler);
+    }
+
+    @Override
+    public void handleClick(String identifier, ClickEvent event) {
+        final Consumer<ClickEvent> handler = this.clickHandlers.get(identifier);
+        if (handler == null) {
+            return;
+        }
+
+        handler.accept(event);
     }
 
     @Override
@@ -166,5 +178,6 @@ public class GuiContentsImpl implements GuiContents {
 
         final Inventory topInv = player.getOpenInventory().getTopInventory();
         topInv.setItem(slot, item.getItemStack());
+        player.updateInventory();
     }
 }

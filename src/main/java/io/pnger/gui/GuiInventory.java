@@ -44,6 +44,7 @@ public class GuiInventory {
                 return;
             }
 
+            contents.fillInventory();
             contents.pagination().setPage(page);
 
             this.inventory = this.openMenu(player);

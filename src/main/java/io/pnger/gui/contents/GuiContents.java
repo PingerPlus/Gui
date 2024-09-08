@@ -90,7 +90,9 @@ public interface GuiContents {
         return this.getItems(identifier).stream().map(GuiItem::slot).toList();
     }
 
-    void handleClick(String identifier, Consumer<ClickEvent> handler);
+    void addClickHandler(String identifier, Consumer<ClickEvent> handler);
+
+    void handleClick(String identifier, ClickEvent event);
 
     Optional<GuiItem> getItem(int slot);
 

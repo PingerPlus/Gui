@@ -1,6 +1,8 @@
 package io.pnger.gui.item;
 
 import io.pnger.gui.material.XMaterial;
+import io.pnger.gui.replacer.ComponentStyler;
+import io.pnger.gui.replacer.Replacer;
 import io.pnger.gui.util.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,11 +10,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemBuilder {
     private ItemStack item;
@@ -124,6 +128,29 @@ public class ItemBuilder {
             lore.add(Text.colorize(line));
             meta.setLore(lore);
         });
+    }
+
+    public ItemBuilder replace(@NotNull Replacer replacer) {
+        final ItemMeta meta = this.item.getItemMeta();
+        if (meta == null) {
+            return this;
+        }
+
+        if (meta.hasDisplayName()) {
+            final Component newDisplayName = replacer.accept(ComponentStyler.componentFromContent(meta.getDisplayName()));
+            if (!newDisplayName.equals(Component.empty())) {
+                meta.setDisplayName(ComponentStyler.contentFromComponent(newDisplayName));
+            }
+            this.item.setItemMeta(meta);
+        }
+
+        if (meta.hasLore()) {
+            List<Component> lore = ItemHandler.getItemLore(this.item);
+            lore = replacer.accept(lore);
+
+            ItemHandler.setItemLore(this.item, lore);
+        }
+        return this;
     }
 
     public ItemBuilder lore(String... lines) {

@@ -1,9 +1,7 @@
 package io.pnger.gui.item;
 
-import io.pnger.gui.event.ClickEvent;
 import io.pnger.gui.template.button.GuiButtonTemplate;
 import java.util.Objects;
-import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,7 +25,6 @@ public class GuiItem {
     private final String state;
     private final GuiButtonTemplate template;
 
-    private Consumer<ClickEvent> onClick;
     private boolean dragging;
 
     private GuiItem(@Nonnull ItemStack item, int slot, @Nonnull String state, @Nonnull GuiButtonTemplate template) {
@@ -39,18 +36,6 @@ public class GuiItem {
 
     public static GuiItem of(@Nonnull ItemStack item, int slot, @Nonnull String state, @Nonnull GuiButtonTemplate template) {
         return new GuiItem(item, slot, state, template);
-    }
-
-    public void setOnClick(Consumer<ClickEvent> onClick) {
-        this.onClick = onClick;
-    }
-
-    public void handleClick(ClickEvent event) {
-        if (this.onClick == null) {
-            return;
-        }
-
-        this.onClick.accept(event);
     }
 
     public int slot() {
@@ -116,7 +101,6 @@ public class GuiItem {
                ", slot=" + this.slot +
                ", state='" + this.state + '\'' +
                ", template=" + this.template +
-               ", onClick=" + this.onClick +
                ", dragging=" + this.dragging +
                '}';
     }
