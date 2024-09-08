@@ -2,12 +2,14 @@ package io.pnger.gui.contents;
 
 import io.pnger.gui.event.ClickEvent;
 import io.pnger.gui.item.GuiItem;
+import io.pnger.gui.item.GuiItemRemapper;
 import io.pnger.gui.item.ItemBuilder;
 import io.pnger.gui.pagination.GuiPagination;
 import io.pnger.gui.template.GuiTemplate;
 import io.pnger.gui.template.button.GuiButtonTemplate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -53,9 +55,52 @@ public interface GuiContents {
         return this.getTemplate().findButtonTemplate(identifier);
     }
 
-    void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier);
+    /**
+     * Remaps an item and optionally caches the remapping for a specified duration.
+     * <p>
+     * If caching is enabled (`cacheFor` > 0), the item will be remapped and the result cached
+     * for the specified duration in milliseconds. If `cacheFor` is 0, the remapping is applied every tick.
+     * If `cacheFor` is negative, the item will be remapped once without caching.
+     * </p>
+     *
+     * @param identifier A unique identifier for the item to be remapped.
+     * @param modifier   The {@link UnaryOperator} that modifies the {@link ItemBuilder}.
+     * @param cacheFor   The duration in milliseconds to cache the remapping. A value of 0 updates every tick,
+     *                   a positive value caches the result for the given duration, and a negative value remaps without caching.
+     */
+    void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier, long cacheFor);
 
-    <T> GuiPagination<T> pagination();
+    /**
+     * Remaps an item without caching.
+     * <p>
+     * This method applies the remapping operation to the item once without any caching,
+     * effectively calling {@link #remapItems(String, UnaryOperator, long)} with a cache duration of -1.
+     * </p>
+     *
+     * @param identifier A unique identifier for the item to be remapped.
+     * @param modifier   The {@link UnaryOperator} that modifies the {@link ItemBuilder}.
+     */
+    default void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier) {
+        this.remapItems(identifier, modifier, -1);
+    }
+
+    /**
+     * Remaps an item and updates it every tick.
+     * <p>
+     * This method applies the remapping operation to the item every tick, effectively calling
+     * {@link #remapItems(String, UnaryOperator, long)} with a cache duration of 0.
+     * </p>
+     *
+     * @param identifier A unique identifier for the item to be remapped.
+     * @param modifier   The {@link UnaryOperator} that modifies the {@link ItemBuilder}.
+     */
+    default void remapItemsAndTick(String identifier, UnaryOperator<ItemBuilder> modifier) {
+        this.remapItems(identifier, modifier, 0);
+    }
+
+    void reloadRemappedItems();
+
+    <T> GuiPagination<T> getPagination();
 
     <T> void createPagination(GuiPagination<T> pagination);
 

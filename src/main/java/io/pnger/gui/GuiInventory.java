@@ -45,7 +45,7 @@ public class GuiInventory {
             }
 
             contents.fillInventory();
-            contents.pagination().setPage(page);
+            contents.getPagination().setPage(page);
 
             this.inventory = this.openMenu(player);
             this.manager.registerInventory(player.getUniqueId(), this);

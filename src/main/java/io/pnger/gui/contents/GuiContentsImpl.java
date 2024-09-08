@@ -3,6 +3,7 @@ package io.pnger.gui.contents;
 import io.pnger.gui.GuiInventory;
 import io.pnger.gui.event.ClickEvent;
 import io.pnger.gui.item.GuiItem;
+import io.pnger.gui.item.GuiItemRemapper;
 import io.pnger.gui.item.ItemBuilder;
 import io.pnger.gui.pagination.GuiPagination;
 import io.pnger.gui.pagination.GuiPaginationImpl;
@@ -15,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -30,7 +32,7 @@ public class GuiContentsImpl implements GuiContents {
     private final GuiInventory inventory;
     private final Map<Integer, GuiItem> items;
     private final GuiTemplate template;
-    private final Map<String, UnaryOperator<ItemStack>> remapper;
+    private final Map<String, GuiItemRemapper> remapper;
     private final Map<String, Consumer<ClickEvent>> clickHandlers;
 
     private GuiPagination<?> pagination;
@@ -89,13 +91,38 @@ public class GuiContentsImpl implements GuiContents {
 
         ItemStack currentStack = stack;
         if (identifier != null) {
-            final UnaryOperator<ItemStack> remapper = this.remapper.get(identifier);
+            final GuiItemRemapper remapper = this.remapper.get(identifier);
             if (remapper != null) {
-                currentStack = remapper.apply(stack);
+                currentStack = remapper.getRemapper().apply(stack);
             }
         }
 
         return ItemBuilder.create(currentStack).build();
+    }
+
+    public void reloadRemappedItems() {
+        for (final Entry<String, GuiItemRemapper> entry : this.remapper.entrySet()) {
+            final String identifier = entry.getKey();
+            final GuiItemRemapper remapper = entry.getValue();
+            if (!remapper.isCacheEnabled()) {
+                continue;
+            }
+
+            final long cacheFor = remapper.getCacheFor();
+            final long lastCached = remapper.getLastCached();
+            if (cacheFor != 0 && (System.currentTimeMillis() - lastCached) < cacheFor) {
+                return;
+            }
+
+            remapper.setLastCached(System.currentTimeMillis());
+
+            final List<GuiItem> items = this.getItems(identifier);
+            for (final GuiItem item : items) { /* For each of these items apply a new item */
+                // TODO: Investigate if this is the best thing to do, maybe we can just make item in gui item non-final
+                final GuiItem newItem = this.createGuiItem(item.slot(), item.template());
+                this.setItem(item.slot(), newItem);
+            }
+        }
     }
 
     @Override
@@ -104,14 +131,15 @@ public class GuiContentsImpl implements GuiContents {
     }
 
     @Override
-    public void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier) {
+    public void remapItems(String identifier, UnaryOperator<ItemBuilder> modifier, long cacheFor) {
         final UnaryOperator<ItemStack> mapper = (item) -> modifier.apply(ItemBuilder.create(item)).build();
-        this.remapper.put(identifier, mapper);
+        final GuiItemRemapper remapper = new GuiItemRemapper(mapper, cacheFor);
+        this.remapper.put(identifier, remapper);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> GuiPagination<T> pagination() {
+    public <T> GuiPagination<T> getPagination() {
         return (GuiPagination<T>) this.pagination;
     }
 

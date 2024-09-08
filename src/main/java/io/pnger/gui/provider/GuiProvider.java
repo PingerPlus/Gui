@@ -41,6 +41,8 @@ public interface GuiProvider {
      * @param contents The {@link GuiContents} object representing the current state of the GUI. This can be manipulated
      *                 to apply any changes needed during the update cycle.
      */
-    default void update(Player player, GuiContents contents) {}
+    default void update(Player player, GuiContents contents) {
+        contents.reloadRemappedItems();
+    }
 
 }
