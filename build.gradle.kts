@@ -14,6 +14,7 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT")
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
+    implementation("org.spongepowered:configurate-yaml:4.0.0")
 }
 
 java {
