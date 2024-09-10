@@ -1,6 +1,10 @@
 package io.pnger.gui;
 
 import io.pnger.gui.listener.GuiListener;
+import io.pnger.gui.template.GuiLayout;
+import io.pnger.gui.template.GuiTemplate;
+import io.pnger.gui.template.button.ButtonState;
+import io.pnger.gui.template.button.GuiButtonTemplate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,6 +38,11 @@ public class GuiManager {
                 }
             });
         }, 1L, 1L);
+
+        ConfigurationSerialization.registerClass(GuiTemplate.class);
+        ConfigurationSerialization.registerClass(GuiLayout.class);
+        ConfigurationSerialization.registerClass(GuiButtonTemplate.class);
+        ConfigurationSerialization.registerClass(ButtonState.class);
 
         plugin.getServer().getPluginManager().registerEvents(new GuiListener(this), this.plugin);
     }
